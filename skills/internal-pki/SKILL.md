@@ -1,15 +1,15 @@
 ---
 name: internal-pki
-description: Operate Gateway's user-facing Internal PKI (Enterprise), including root and intermediate certificate authorities, tls-server, tls-client, code-signing, and email certificates, templates, revocation, expiry, and linking an internal certificate as a Route's SSL certificate. Use when asked to stand up a private certificate authority, issue, renew, or revoke an internal certificate, or explain internal PKI expiry and reissue. Separate from Gateway's hidden system PKI. Use after using-gateway has confirmed the Gateway MCP connection.
+description: Operate Opfield's user-facing Internal PKI (Enterprise), including root and intermediate certificate authorities, tls-server, tls-client, code-signing, and email certificates, templates, revocation, expiry, and linking an internal certificate as a Route's SSL certificate. Use when asked to stand up a private certificate authority, issue, renew, or revoke an internal certificate, or explain internal PKI expiry and reissue. Separate from Opfield's hidden system PKI. Use after using-opfield has confirmed the Opfield MCP connection.
 ---
 
 # Internal PKI
 
-Internal PKI is a private trust domain that Gateway operates for you: certificate authorities, issued certificates, revocation, and templates. It is separate from Gateway's hidden **system PKI** (Node, Relay, daemon, managed-storage, and managed-database mTLS identities); never use these tools to touch system transport certificates.
+Internal PKI is a private trust domain that Opfield operates for you: certificate authorities, issued certificates, revocation, and templates. It is separate from Opfield's hidden **system PKI** (Node, Relay, daemon, managed-storage, and managed-database mTLS identities); never use these tools to touch system transport certificates.
 
 Enterprise is required to create authorities, issue certificates, or change templates. After a license grace period ends, existing authorities, certificates, and templates stay viewable, revocable, and exportable; creating, issuing, and editing templates need the plan again.
 
-Start with `using-gateway` for connection, discovery, and safety rules. Read `read_gateway_documentation({ topic: "pki" })` before an unfamiliar workflow.
+Start with `using-opfield` for connection, discovery, and safety rules. Read `read_gateway_documentation({ topic: "pki" })` before an unfamiliar workflow.
 
 ## Certificate authorities
 
@@ -22,7 +22,7 @@ Start with `using-gateway` for connection, discovery, and safety rules. Read `re
 
 ## Issue a certificate
 
-1. `issue_certificate({ caId, commonName, keyAlgorithm, validityDays, type, sans? })` with `type` `tls-server`, `tls-client`, `code-signing`, or `email`. `sans` is an array of plain strings (`"example.com"`, `"*.example.com"`, `"10.0.0.1"`, `"user@example.com"`); Gateway detects the kind. Never prefix values with `DNS:` or `IP:`; that fails.
+1. `issue_certificate({ caId, commonName, keyAlgorithm, validityDays, type, sans? })` with `type` `tls-server`, `tls-client`, `code-signing`, or `email`. `sans` is an array of plain strings (`"example.com"`, `"*.example.com"`, `"10.0.0.1"`, `"user@example.com"`); Opfield detects the kind. Never prefix values with `DNS:` or `IP:`; that fails.
 2. A certificate cannot outlive its CA. A longer request fails with `VALIDITY_EXCEEDS_CA` unless `clampToCaValidity` is set, which ends it with the CA.
 3. Templates (`list_templates`, `create_template`, `manage_template`, `delete_template`) predefine type, key algorithm, validity, key usage, extended key usage, SAN requirements, subject defaults, CRL and AIA URLs, and custom extensions. Built-in templates (`isBuiltin: true`) cannot be edited or deleted.
 4. `get_certificate`, `list_certificates`; `revoke_certificate({ certificateId, reason })` with an RFC 5280 reason: `unspecified` (default), `keyCompromise`, `caCompromise`, `affiliationChanged`, `superseded`, `cessationOfOperation`, or `certificateHold`. Revocation is irreversible; confirm first.
@@ -35,7 +35,9 @@ PKI certificates and SSL certificates live in separate stores; a Route needs an 
 2. `link_internal_cert({ internalCertId: certificate.id })` creates a separate SSL certificate entry with its own ID.
 3. Use that SSL certificate ID as the Route's `sslCertificateId` (`ingress-and-domains`).
 
-When Gateway holds the private key, a linked certificate reissues automatically from the same CA and template once two thirds of its lifetime has passed (shown as "Reissue" under auto-renew). A certificate signed from an external CSR only alerts: issue a new one and re-link it.
+Linking needs `ssl:cert:issue` on the destination and `pki:cert:deploy` on the PKI certificate or its issuing CA (`pki:cert:export` also works). Setting the PKI certificate directly as the Route's `internalCertificateId` needs the same `pki:cert:deploy`. Either way the private key goes to nginx, never to the caller.
+
+When Opfield holds the private key, a linked certificate reissues automatically from the same CA and template once two thirds of its lifetime has passed (shown as "Reissue" under auto-renew). A certificate signed from an external CSR only alerts: issue a new one and re-link it.
 
 ## Expiry alerts
 
@@ -56,4 +58,4 @@ User CAs alert 180, 60, 30, and 7 days before expiry. System CAs alert 730, 365,
 - Never use a user-facing root or intermediate to replace or interoperate with the system PKI, the Database CA, daemon identities, or Relay identities; they have separate rotation and recovery contracts.
 - A database backup without `PKI_MASTER_KEY` (an operator-managed secret) cannot recover encrypted private keys. That is outside an agent's reach; flag it to the operator if it comes up.
 
-Scopes: `pki:ca:view` (restrictable to a CA ID), `pki:ca:create:root|intermediate`, `pki:ca:edit`, `pki:ca:export`, `pki:ca:revoke:root|intermediate`, `pki:cert:view|issue|revoke|export`, `pki:templates:view|create|edit|delete`, `admin:details:certificates`. Further reading: [Internal PKI](https://docs.goodgateway.dev/en/certificates/internal-pki/), [SSL certificates](https://docs.goodgateway.dev/en/certificates/ssl-certificates/).
+Scopes: `pki:ca:view` (restrictable to a CA ID), `pki:ca:create:root|intermediate`, `pki:ca:edit`, `pki:ca:export`, `pki:ca:revoke:root|intermediate`, `pki:cert:view|issue|revoke|export`, `pki:templates:view|create|edit|delete`, `admin:details:certificates`. Further reading: [Internal PKI](https://docs.opfield.dev/en/certificates/internal-pki/), [SSL certificates](https://docs.opfield.dev/en/certificates/ssl-certificates/).

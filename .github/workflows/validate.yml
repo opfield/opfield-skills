@@ -52,4 +52,4 @@ jobs:
           cd "$install_root"
           npx -y skills add "$GITHUB_WORKSPACE" --skill publishing-html-pages -a codex -y
           test -f .agents/skills/publishing-html-pages/SKILL.md || test -f .codex/skills/publishing-html-pages/SKILL.md
-          test ! -e .agents/skills/using-gateway && test ! -e .codex/skills/using-gateway
+          test ! -e .agents/skills/using-opfield && test ! -e .codex/skills/using-opfield

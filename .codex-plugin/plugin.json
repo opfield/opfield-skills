@@ -1,16 +1,18 @@
 {
-  "name": "gateway",
-  "version": "0.4.0",
-  "description": "Install, connect to, deploy through, operate, and diagnose a user-owned Good Gateway instance with one router skill and ten domain skills.",
+  "name": "opfield",
+  "version": "0.6.0",
+  "description": "Install, connect to, deploy through, operate, and diagnose a user-owned Opfield instance, a self-hosted infrastructure control plane for a fleet of nodes, with one router skill and ten domain skills.",
   "author": {
-    "name": "Square Labs",
-    "url": "https://thesquarelabs.com"
+    "name": "Opfield",
+    "url": "https://opfield.dev"
   },
-  "homepage": "https://docs.goodgateway.dev/en/ai/agent-skills/",
-  "repository": "https://github.com/the-square-labs/gateway-skills",
+  "homepage": "https://docs.opfield.dev/en/ai/agent-skills/",
+  "repository": "https://github.com/opfield/opfield-skills",
   "license": "MIT",
   "keywords": [
+    "opfield",
     "gateway",
+    "control-plane",
     "deployment",
     "infrastructure",
     "pages",
@@ -26,21 +28,21 @@
   ],
   "skills": "./skills/",
   "interface": {
-    "displayName": "Good Gateway",
-    "shortDescription": "Deploy and operate through Gateway",
-    "longDescription": "Install or connect to a user-owned Good Gateway instance and operate it through its native workflows: Pages publishing with shareable links, Docker Containers, blue/green Deployments, Compose Projects and Git builds, high availability, Domains, Routes and TLS, internal PKI, managed databases, object storage, Nodes, observability, and access control, following asynchronous Tasks and verifying every result.",
-    "developerName": "Square Labs",
+    "displayName": "Opfield",
+    "shortDescription": "Deploy and operate through Opfield",
+    "longDescription": "Install or connect to a user-owned Opfield instance, a self-hosted infrastructure control plane for a fleet of nodes, and operate it through its native workflows: Pages publishing with shareable links, Docker Containers, blue/green Deployments, Compose Projects and Git builds, high availability, Domains, Routes and TLS, internal PKI, managed databases, object storage, Nodes, observability, and access control, following asynchronous Tasks and verifying every result.",
+    "developerName": "Opfield",
     "category": "Developer Tools",
     "capabilities": [
       "Instructions"
     ],
-    "websiteURL": "https://goodgateway.dev",
+    "websiteURL": "https://opfield.dev",
     "defaultPrompt": [
-      "Connect this project to my Good Gateway instance.",
-      "Deploy this application through Good Gateway.",
-      "Diagnose this Good Gateway resource without changing it."
+      "Connect this project to my Opfield instance.",
+      "Deploy this application through Opfield.",
+      "Diagnose this Opfield resource without changing it."
     ],
-    "brandColor": "#7467F5",
+    "brandColor": "#141414",
     "composerIcon": "./assets/icon.svg",
     "logo": "./assets/icon.svg"
   }

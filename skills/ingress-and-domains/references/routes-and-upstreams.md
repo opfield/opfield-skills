@@ -10,7 +10,7 @@
 ## create_route fields
 
 - `domainNames`, type `proxy`, `redirect`, or `404`, and optionally `nodeId` (the Ingress Node).
-- Omit `nodeId` when a Domain is a registered Gateway Domain: the Route uses the Domain's Ingress Node, and registered Domains on different Nodes cannot share a Route. Without a registered Domain, an omitted `nodeId` works only when exactly one Node is eligible and that Node is online; otherwise the call fails with `ROUTE_INGRESS_NODE_REQUIRED` and lists the eligible Nodes with their status.
+- Omit `nodeId` when a Domain is a registered Opfield Domain: the Route uses the Domain's Ingress Node, and registered Domains on different Nodes cannot share a Route. Without a registered Domain, an omitted `nodeId` works only when exactly one Node is eligible and that Node is online; otherwise the call fails with `ROUTE_INGRESS_NODE_REQUIRED` and lists the eligible Nodes with their status.
 - `list_route_ingress_nodes({ folderId? })` lists the Ingress Nodes you may create Routes on (id, name, hostname, availability status). It needs any `proxy:create` grant (broad, on a folder, or on a Node) and no Node permission. A folder-limited grant also needs `folderId` on `create_route`.
 - Proxy target: `forwardHost`, `forwardPort`, `forwardScheme`, and `upstreamKind` (`manual`, `docker_container`, `docker_deployment`, or `pages`).
 - TLS: `sslEnabled`, `sslCertificateId` (an SSL certificate ID, never a PKI certificate ID), `sslForced`, `http2Support`.
@@ -26,12 +26,12 @@
 | Pages | `upstreamKind: "pages"`, `pageProjectId`, `pageTagId` of a ready Tag |
 | Manual | `upstreamKind: "manual"`, `forwardHost`, `forwardPort`, `forwardScheme` |
 
-A workload with Docker Availability is routed through its logical identity; Gateway balances across healthy placements (see `high-availability`).
+A workload with Docker Availability is routed through its logical identity; Opfield balances across healthy placements (see `high-availability`).
 
 ## Other Route tools
 
 - `get_route`, `update_route`, `delete_route` (does not delete its certificate or Access List), `list_routes`, `create_route_folder`, `move_routes_to_folder`, `delete_route_folder`, `resync_tls_distribution`.
-- `manage_route` reads: `get_config`, `get_by_slug`, `health_history`, `secure_link_status`, `access_logs` (tail up to 200 lines), `maintenance_access_code` (a 5-minute bypass code, needs `proxy:maintenance:bypass`), and `validate_config`, which dry-checks an advanced snippet or, with `mode: "raw"`, a full raw config. Validate before switching a Route to raw mode or applying an unusual snippet.
+- `manage_route` reads: `get_config`, `get_by_slug`, `health_history`, `secure_link_status`, `access_logs` (tail up to 200 lines), `maintenance_access_code` (a 5-minute bypass code, needs `proxy:maintenance:bypass`; a Route whose advanced config sets `secure_link` shows the maintenance page without team access, and the code is refused with `MAINTENANCE_ACCESS_UNAVAILABLE`), and `validate_config`, which dry-checks an advanced snippet or, with `mode: "raw"`, a full raw config. Validate before switching a Route to raw mode or applying an unusual snippet.
 
 ## Additional Routes and Secure Links
 
@@ -47,4 +47,4 @@ A workload with Docker Availability is routed through its logical identity; Gate
 
 ## Scopes
 
-`domains:view|create|edit|delete|folders:manage`, `proxy:view|create|edit|delete|raw:read|raw:write|advanced|unrestricted|maintenance:bypass|folders:manage`, `proxy:templates:view|manage`, `ssl:cert:view|issue|delete|folders:manage`, `acl:view|create|edit|delete`. `ssl:cert:issue`, `ssl:cert:delete`, `proxy:raw:write`, `proxy:unrestricted`, and `proxy:templates:manage` need explicit OAuth approval. Full table: [Scopes reference](https://docs.goodgateway.dev/en/identity/scopes-reference/).
+`domains:view|create|edit|delete|folders:manage`, `proxy:view|create|edit|delete|raw:read|raw:write|advanced|unrestricted|maintenance:bypass|folders:manage`, `proxy:templates:view|manage`, `ssl:cert:view|issue|renew|delete|folders:manage`, `pki:cert:deploy`, `acl:view|create|edit|delete`. `ssl:cert:issue`, `ssl:cert:delete`, `proxy:raw:write`, `proxy:unrestricted`, and `proxy:templates:manage` need explicit OAuth approval. Full table: [Scopes reference](https://docs.opfield.dev/en/identity/scopes-reference/).

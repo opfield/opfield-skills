@@ -7,7 +7,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SKILLS_DIR = ROOT / "skills"
-ROUTER_SKILL = "using-gateway"
+ROUTER_SKILL = "using-opfield"
 NAME_PATTERN = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 FRONTMATTER_PATTERN = re.compile(r"\A---\n(.*?)\n---\n", re.DOTALL)
 FENCE_PATTERN = re.compile(r"^(```|~~~).*?^\1[ \t]*$", re.DOTALL | re.MULTILINE)
@@ -77,7 +77,7 @@ if len(claude_entries) != 1 or claude_entries[0].get("name") != claude.get("name
     fail("Claude marketplace must expose exactly the canonical plugin")
 
 source = codex_entries[0].get("source", {}) if codex_entries else {}
-if source.get("source") != "url" or source.get("url") != "https://github.com/the-square-labs/gateway-skills.git":
+if source.get("source") != "url" or source.get("url") != "https://github.com/opfield/opfield-skills.git":
     fail("Codex marketplace must reference the public repository root")
 if claude_entries and claude_entries[0].get("source") != "./":
     fail("Claude marketplace must reference the repository root")
@@ -87,7 +87,7 @@ if claude_entries and claude_entries[0].get("source") != "./":
 
 
 def parse_frontmatter(skill_file: Path) -> dict[str, str] | None:
-    """Parse the flat `key: value` frontmatter that skill installers and Gateway's skill sync read."""
+    """Parse the flat `key: value` frontmatter that skill installers and Opfield's skill sync read."""
     match = FRONTMATTER_PATTERN.match(skill_file.read_text(encoding="utf-8"))
     if not match:
         fail(f"{relative(skill_file)}: missing frontmatter delimited by --- lines")
@@ -212,4 +212,4 @@ else:
 if errors:
     raise SystemExit("repository validation failed:\n" + "\n".join(f"- {error}" for error in errors))
 
-print(f"validated gateway plugin {codex['version']} and {len(skill_names)} skills: {', '.join(skill_names)}")
+print(f"validated opfield plugin {codex['version']} and {len(skill_names)} skills: {', '.join(skill_names)}")

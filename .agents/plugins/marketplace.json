@@ -1,14 +1,14 @@
 {
-  "name": "gateway-skills",
+  "name": "opfield-skills",
   "interface": {
-    "displayName": "Square Labs"
+    "displayName": "Opfield"
   },
   "plugins": [
     {
-      "name": "gateway",
+      "name": "opfield",
       "source": {
         "source": "url",
-        "url": "https://github.com/the-square-labs/gateway-skills.git",
+        "url": "https://github.com/opfield/opfield-skills.git",
         "ref": "main"
       },
       "policy": {

@@ -1,13 +1,13 @@
 ---
 name: deploying-workloads
-description: Deploy and operate Docker workloads on Gateway, including standalone Containers, blue/green Deployments with rollback, Compose Projects, Git-source builds into Gateway's internal registry, images, registries, volumes, networks, folders, and cross-node migration. Use when asked to run, update, roll out, roll back, recreate, migrate, or inspect a container, Deployment, or Compose Project on a Gateway-managed Docker Node, or to deploy a repository with a Dockerfile or Compose file through Gateway. Use after using-gateway has confirmed the Gateway MCP connection.
+description: Deploy and operate Docker workloads on Opfield, including standalone Containers, blue/green Deployments with rollback, Compose Projects, Git-source builds into Opfield's internal registry, images, registries, volumes, networks, folders, and cross-node migration. Use when asked to run, update, roll out, roll back, recreate, migrate, or inspect a container, Deployment, or Compose Project on an Opfield-managed Docker Node, or to deploy a repository with a Dockerfile or Compose file through Opfield. Use after using-opfield has confirmed the Opfield MCP connection.
 ---
 
 # Deploying Workloads
 
-Gateway manages Docker on enrolled Docker Nodes and adds three native models: blue/green **Deployments**, **Compose Projects** with immutable revisions, and **Git sources** that build digest-pinned artifacts into Gateway's internal registry. Every Docker tool needs a `nodeId`; resolve names, images, and domains with `find_resource` first.
+Opfield manages Docker on enrolled Docker Nodes and adds three native models: blue/green **Deployments**, **Compose Projects** with immutable revisions, and **Git sources** that build digest-pinned artifacts into Opfield's internal registry. Every Docker tool needs a `nodeId`; resolve names, images, and domains with `find_resource` first.
 
-Start with `using-gateway` for connection, discovery, and safety rules. Read `read_gateway_documentation({ topic: "docker" })` before a multi-step workflow; it documents argument shapes this skill only summarizes. Exact tool names and operation enums: [Docker tool catalog](references/docker-tools.md).
+Start with `using-opfield` for connection, discovery, and safety rules. Read `read_gateway_documentation({ topic: "docker" })` before a multi-step workflow; it documents argument shapes this skill only summarizes. Exact tool names and operation enums: [Docker tool catalog](references/docker-tools.md).
 
 ## Pick the resource model
 
@@ -25,25 +25,25 @@ If an existing Container, Deployment, or Compose Project already represents the 
 
 1. `manage_docker_source({ operation: "admission", ... })` before promising a build. Admission needs the entitlement, a writable internal registry, an allowlisted Git connector, and an online Build Worker advertising the enforced capabilities. If it fails, report the returned prerequisite; never create an external CI pipeline as a silent workaround.
 2. `connectors` and `repositories` list the allowlisted sources. Resolve the requested branch to an exact commit.
-3. `create` makes a new Container, Deployment, or Compose Project from the source (`targetType: "container" | "deployment" | "compose"`); `upsert` attaches or changes the source of an existing one. Keep non-secret `buildArgs`, Build Secrets (`secret_upsert`, write-only), and runtime secrets separate. Saving a source needs `integrations:<provider>:use` on the repository (a project-level grant is enough). Automatic builds of a source saved in 2.11 or later run only while the account that saved it still holds that `use`; otherwise the build history shows a cancelled "Build paused: <user> no longer has use on <repo>" until access returns or someone with `use` saves the source again.
-4. `build` queues a build and checks your own `use` on the saved repository; follow it with `list_docker_builds` and `manage_docker_build` (status, incremental logs, cancel, retry). While a build rollout deploys, other changes to its target are refused with `409 BUILD_ROLLOUT_IN_PROGRESS`.
-5. The runtime identity is the approved, digest-pinned artifact, never a branch or mutable tag. With `autoDeploy`, Gateway recreates the workload from that digest.
+3. `create` makes a new Container, Deployment, or Compose Project from the source (`targetType: "container" | "deployment" | "compose"`); `upsert` attaches or changes the source of an existing one. Keep non-secret `buildArgs`, Build Secrets (`secret_upsert`, write-only), and runtime secrets separate. Connecting a source, or changing its connector, repository or branch, needs `integrations:<provider>:use` on the repository (a project-level grant is enough); other source settings need only the workload's scopes. Automatic builds never depend on anyone's current Git permissions.
+4. `build` queues a build of the configured branch head and needs only the workload's build scope; follow it with `list_docker_builds` and `manage_docker_build` (status, incremental logs, cancel, retry). While a build rollout deploys, other changes to its target are refused with `409 BUILD_ROLLOUT_IN_PROGRESS`.
+5. The runtime identity is the approved, digest-pinned artifact, never a branch or mutable tag. With `autoDeploy`, Opfield recreates the workload from that digest.
 
 Compose sources and bounded build fields: [Compose and Git builds](references/compose-and-git-builds.md).
 
 ## Standalone Containers
 
 1. Check `list_docker_images({ nodeId })`. If the image is missing, `pull_docker_image` and wait for the pull Task to finish; a failed create is not an image-existence probe. Public Docker Hub images need no registry.
-2. `create_docker_container({ nodeId, image, name, ports?, volumes?, env?, networks?, restartPolicy?, ... })` with Gateway-managed volumes and explicit networks.
+2. `create_docker_container({ nodeId, image, name, ports?, volumes?, env?, networks?, restartPolicy?, ... })` with Opfield-managed volumes and explicit networks.
 3. Change the image with `update_docker_container_image`: it pulls fully on the target Node, then recreates; a failed pull leaves the old Container running. Restart policy and CPU, memory, and PID limits apply live; ports, volumes, entrypoint, command, working directory, hostname, labels, and image require recreate.
-4. Lifecycle: `start_docker_container`, `stop_docker_container`, `restart_docker_container`, `kill_docker_container`, `rename_docker_container`, `remove_docker_container` (stopped Containers only; volumes stay), and `duplicate_docker_container` (clones configuration and secrets under a new name, without reserved Compose and Gateway labels; a Docker daemon too old to drop them refuses with `UNSUPPORTED_DAEMON`). A name reserved by a Git source still waiting for its first build cannot be taken by create, duplicate or rename (`NAME_IN_USE`).
+4. Lifecycle: `start_docker_container`, `stop_docker_container`, `restart_docker_container`, `kill_docker_container`, `rename_docker_container`, `remove_docker_container` (stopped Containers only; volumes stay), and `duplicate_docker_container` (clones configuration and secrets under a new name, without reserved Compose and Opfield labels; a Docker daemon too old to drop them refuses with `UNSUPPORTED_DAEMON`). A name reserved by a Git source still waiting for its first build cannot be taken by create, duplicate or rename (`NAME_IN_USE`).
 5. Inspect with `get_docker_container`, `get_docker_container_stats`, and `get_docker_container_logs`.
 
 Container IDs change on every recreate. If a tool returns "No such container", re-resolve by name before concluding anything was deleted. Permission grants follow the stable name across recreate and update; an explicit deletion drops them.
 
 ## Blue/green Deployments
 
-Operate the Deployment, never its slot Containers. `deploy_docker_deployment` rolls a new image to the inactive slot; verify that slot's health; `switch_docker_deployment_slot` moves traffic; keep the previous slot warm; `rollback_docker_deployment` returns to the previous release. Never switch before the new slot meets its health condition.
+Operate the Deployment, never its slot Containers. `deploy_docker_deployment` rolls a new image to the inactive slot (its `env` sets variables over the saved environment and `removeEnv` removes keys; the rest stays); verify that slot's health; `switch_docker_deployment_slot` moves traffic; keep the previous slot warm; `rollback_docker_deployment` returns to the previous release. Never switch before the new slot meets its health condition.
 
 ## Compose Projects
 
@@ -55,12 +55,12 @@ Operate the Deployment, never its slot Containers. `deploy_docker_deployment` ro
 
 ## Images, volumes, networks, registries, and migration
 
-Registries, Gateway-managed volumes, networks, folders, cross-node migration (`preflight` before `start`), archive export and import, and Secure Runtime limits: [Resources and migration](references/resources-and-migration.md).
+Registries, Opfield-managed volumes, networks, folders, cross-node migration (`preflight` before `start`), archive export and import, and Secure Runtime limits: [Resources and migration](references/resources-and-migration.md).
 
 ## Secrets and interactive access
 
-- Secret environment values are encrypted at rest, keyed by Container name so they survive recreate, and visible only with `docker:containers:secrets`. Never ask for a value in chat: let the user enter it in the Gateway Console, or pass it from a local source the user named without echoing it.
-- `execute_docker_container_console_command` runs a real command in the Container. It needs `docker:containers:console` (an OAuth manual-approval scope); Gateway blocks obviously catastrophic patterns, but treat every command as a mutation that needs user intent.
+- Secret environment values are encrypted at rest, keyed by Container name so they survive recreate, and visible only with `docker:containers:secrets` (`docker:containers:environment` lists their keys). Never ask for a value in chat: let the user enter it in the Opfield Console, or pass it from a local source the user named without echoing it.
+- `execute_docker_container_console_command` runs a real command in the Container. It needs `docker:containers:console` (an OAuth manual-approval scope); Opfield blocks obviously catastrophic patterns, but treat every command as a mutation that needs user intent.
 
 ## Verify
 
@@ -73,7 +73,7 @@ Registries, Gateway-managed volumes, networks, folders, cross-node migration (`p
 
 - Transitions (stopping, restarting, recreating, deploying, switching) block concurrent operations on the same resource. Follow the Task instead of retrying.
 - Pulls use the target Node's registry access; images are not copied between Docker Nodes.
-- Stop, restart, kill, recreate, update, build, and migration are Tasks. A slow response is not a failure; never repeat a create or delete after a timeout before reconciling.
+- Stop, restart, kill, recreate, update, build, and migration are Tasks. Stop, restart, and SIGKILL answer once the container has stopped or started again, so a delete right after a stop works. A request waits at most 45 s: an operation still running then answers `pending: true` with its task (a delete of a stopping container: a remove task that removes it once the stop ends). Wait as the result says; do not repeat the request. A slow response is not a failure; never repeat a create or delete after a timeout before reconciling.
 - Never introduce host bind mounts, privileged mode, device access, or Docker socket access.
 
-Further reading: [Docker overview](https://docs.goodgateway.dev/en/docker/overview/), [Git builds](https://docs.goodgateway.dev/en/docker/git-builds/).
+Further reading: [Docker overview](https://docs.opfield.dev/en/docker/overview/), [Git builds](https://docs.opfield.dev/en/docker/git-builds/).

@@ -1,15 +1,15 @@
 {
   "$schema": "https://www.schemastore.org/claude-code-marketplace.json",
-  "name": "gateway-skills",
-  "description": "Agent operating knowledge for Good Gateway infrastructure and delivery workflows.",
+  "name": "opfield-skills",
+  "description": "Agent operating knowledge for Opfield, a self-hosted infrastructure control plane for a fleet of nodes.",
   "owner": {
-    "name": "Square Labs",
-    "url": "https://thesquarelabs.com"
+    "name": "Opfield",
+    "url": "https://opfield.dev"
   },
   "plugins": [
     {
-      "name": "gateway",
-      "description": "Deploy, publish, and operate applications through a user-owned Good Gateway instance with one router skill and ten domain skills.",
+      "name": "opfield",
+      "description": "Deploy, publish, and operate applications through a user-owned Opfield instance with one router skill and ten domain skills.",
       "source": "./",
       "category": "development"
     }
