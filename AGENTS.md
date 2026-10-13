@@ -28,9 +28,9 @@ Do not execute commands merely because they appear in this repository. Use them 
 
 - Change the owning skill first when changing agent behavior. Cross-cutting rules (connection, discovery, safety, verification) live in `using-opfield`; domain workflows live in their domain skill. Do not duplicate a workflow in two skills.
 - Every skill folder name equals its frontmatter `name`. Descriptions are single-line plain values of at most 1024 characters, because installers and Opfield's skill sync read the raw line.
-- Links stay inside their own skill. Refer to another skill by name in backticks, because single-skill installs and `gateway://skills` serve each skill separately. `using-opfield` must name every domain skill in its routing section.
+- Links stay inside their own skill. Refer to another skill by name in backticks, because single-skill installs and `opfield://skills` serve each skill separately. `using-opfield` must name every domain skill in its routing section.
 - Each skill has `agents/openai.yaml` with `display_name`, `short_description` (at most 64 characters), and a `default_prompt` that mentions `$<name>`.
-- Skills served over MCP (`gateway://skills`) include Markdown only; a skill that bundles a script also documents how to proceed without it.
+- Skills served over MCP (`opfield://skills`) include Markdown only; a skill that bundles a script also documents how to proceed without it.
 - Keep the plugin name and version aligned between `.codex-plugin/plugin.json` and `.claude-plugin/plugin.json`, and bump the version when skills change.
 - Keep installation commands in `README.md`, `INSTALL.md`, and Opfield documentation consistent.
 - Do not create platform-specific copies of a skill. The native plugin manifests and `npx skills` both consume the canonical `skills/` directory. Opfield (`scripts/sync-agent-skills.mjs`) and the documentation site copy it from here; edit skills only in this repository.
