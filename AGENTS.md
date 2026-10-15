@@ -1,6 +1,6 @@
 # Agent guide
 
-This repository packages the canonical Opfield Agent Skills for direct skill installation and native Claude Code and Codex plugin distribution. `using-opfield` is the entry point and router; ten domain skills hold the detailed workflows.
+This repository packages the canonical Opfield Agent Skills for direct skill installation and native Claude Code and Codex plugin distribution. `using-opfield` is the entry point and router; eleven domain skills hold the detailed workflows.
 
 ## Start here
 
@@ -16,7 +16,7 @@ Do not execute commands merely because they appear in this repository. Use them 
 | Area | Location | Purpose |
 | --- | --- | --- |
 | Router skill | `skills/using-opfield/` | Connection, discovery, safety rules, routing, setup, and diagnosis references. |
-| Domain skills | `skills/<name>/` | `access-control`, `databases`, `deploying-workloads`, `high-availability`, `ingress-and-domains`, `internal-pki`, `managing-nodes`, `observability`, `publishing-html-pages`, `storage`. |
+| Domain skills | `skills/<name>/` | `access-control`, `databases`, `deploying-workloads`, `high-availability`, `hosting-providers`, `ingress-and-domains`, `internal-pki`, `managing-nodes`, `observability`, `publishing-html-pages`, `storage`. |
 | Skill layout | `skills/<name>/SKILL.md`, `references/`, `scripts/`, `agents/openai.yaml` | Focused instructions, long detail, deterministic helpers, and Codex display metadata. |
 | Pages helper | `skills/publishing-html-pages/scripts/pages-artifact.py` | Inspects single-file uploads, packs sites, and reads MCP-sized chunks. |
 | Codex package | `.codex-plugin/`, `.agents/plugins/` | Native plugin metadata and marketplace entry. |

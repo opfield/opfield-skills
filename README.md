@@ -61,6 +61,7 @@ This package was `the-square-labs/gateway-skills`, with the `gateway` plugin and
 | `databases` | Provision managed PostgreSQL, Redis, or ClickHouse, bind them privately, query them, and manage backups. |
 | `storage` | Manage external and managed object storage, copy jobs, and the MinIO to SeaweedFS migration. |
 | `managing-nodes` | Enroll, inspect, update, and repair Opfield Nodes. |
+| `hosting-providers` | Create servers as Opfield Nodes through hosting accounts and Proxmox hosts, and manage the VMs behind them. |
 | `observability` | Work with logs, alerts and webhooks, SIEM export, status pages, and the audit log. |
 | `access-control` | Administer users, groups, scopes, tokens, and OAuth grants with least privilege. |
 

@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "opfield",
   "version": "0.6.0",
-  "description": "Install, connect to, deploy through, operate, and diagnose a user-owned Opfield instance, a self-hosted infrastructure control plane for a fleet of nodes, with one router skill and ten domain skills.",
+  "description": "Install, connect to, deploy through, operate, and diagnose a user-owned Opfield instance, a self-hosted infrastructure control plane for a fleet of nodes, with one router skill and eleven domain skills.",
   "author": {
     "name": "Opfield",
     "url": "https://opfield.dev"

@@ -9,7 +9,7 @@
   "plugins": [
     {
       "name": "opfield",
-      "description": "Deploy, publish, and operate applications through a user-owned Opfield instance with one router skill and ten domain skills.",
+      "description": "Deploy, publish, and operate applications through a user-owned Opfield instance with one router skill and eleven domain skills.",
       "source": "./",
       "category": "development"
     }

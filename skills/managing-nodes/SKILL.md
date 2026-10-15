@@ -1,6 +1,6 @@
 ---
 name: managing-nodes
-description: Enroll, inspect, and operate Opfield Nodes, the servers running Opfield daemons for nginx ingress, Docker, builder, storage and databases, monitoring, and relay. Use when asked to add a server to Opfield, check Node or daemon health, change a Node's service address, open a Node console or browse its filesystem, update daemons, or diagnose an offline or degraded Node. For a brand-new installation, start with the instance setup in using-opfield. Use after using-opfield has confirmed the Opfield MCP connection.
+description: Enroll, inspect, and operate Opfield Nodes, the servers running Opfield daemons for nginx ingress, Docker, builder, storage and databases, monitoring, and relay. Use when asked to add a server to Opfield, check Node or daemon health, change a Node's service address, open a Node console or browse its filesystem, update daemons, or diagnose an offline or degraded Node. To create a new VM as a Node through a hosting account, use hosting-providers. For a brand-new installation, start with the instance setup in using-opfield. Use after using-opfield has confirmed the Opfield MCP connection.
 ---
 
 # Managing Nodes
@@ -27,6 +27,8 @@ Enroll only the roles the workload needs.
 
 Adding a server is an explicit infrastructure mutation; do it only on the user's request.
 
+These steps enroll a server that already exists. To create a new server as a Node, a VM at HOSTKEY, DigitalOcean, Hetzner Cloud, or CloudBlast, or on a Proxmox host, use `hosting-providers` (`manage_hosting` `provision`): Opfield orders the VM, installs the daemon, and enrolls it, with no command to run by hand. `node_get` of `manage_hosting` shows the VM behind a hosted Node.
+
 1. Prefer the Console flow (**Nodes > Add Node**): it shows the one-time enrollment command directly to the user, so the token never passes through chat.
 2. `create_node({ type, displayName, ... })` (relay Nodes also need the advertised address) is the MCP equivalent. It returns a one-time enrollment token and the Opfield gRPC certificate fingerprint. Use it only when you will run the setup command on the target host yourself, with the user's authorization. Otherwise let the user use the Console.
 3. Run the exact setup command Opfield documents for the type (`setup-<type>-node.sh` with `--opfield <host>:9443 --token ... --opfield-cert-sha256 sha256:...`, plus `--mode builder` for builders and `--storage-root <path> --yes` for unattended storage Nodes). Pass the token straight into that command; never print it, log it, store it, or repeat it. Never reconstruct a token, target, or fingerprint by hand.
@@ -50,6 +52,7 @@ Never delete a Node record while its old daemon might still reconnect: deletion 
 
 - `execute_node_console_command({ nodeId, command: ["sh", "-lc", "..."] })` runs one command in a real PTY on the host OS. It needs `nodes:console`, an OAuth manual-approval scope. Opfield blocks obviously catastrophic patterns, but treat every command as a host mutation that needs user intent.
 - `manage_node_file` lists, reads, writes, creates, moves, and deletes files through the daemon, with chunked `upload_init`, `upload_chunk`, `upload_complete`, and `upload_abort`. Reads (`nodes:files:read`) are capped and report `truncated`; any change needs `nodes:files:write`. Both are manual-approval scopes.
+- Managed Docker objects change only through the Docker tools. For agents, a console command (or `ssh_execute_command`) that removes, recreates, stops, starts, restarts, kills, pauses, renames or updates an Opfield-managed container, reuses its name, ports or volumes in `docker run`/`create`, connects or disconnects its networks, removes or prunes managed volumes, networks or containers, runs `docker compose` up/down/rm/restart/pull on a managed project, or edits `/var/lib/docker-daemon`, `/etc/docker-daemon` or `/var/lib/docker` is refused with `MANAGED_RESOURCE_CONSOLE_FORBIDDEN`. The error names the object and the tool to use (`manage_docker_container` recreate, `remove_docker_container`, `manage_docker_deployment`, `manage_docker_compose`, `manage_docker_volume`, ...). `docker ps`, `inspect`, `logs`, `stats` and `images` stay allowed. Do not retry with another shell form.
 - Do not use the console to work around a type's design, such as giving a builder a Docker socket. Docker Nodes report Secure Runtime (gVisor) setup state; install it through Opfield's setup entrypoint, not the console, unless the user explicitly asks for host-level repair.
 
 ## Health
