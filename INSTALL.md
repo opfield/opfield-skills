@@ -79,30 +79,6 @@ codex plugin add opfield@opfield-skills
 
 Start a new Claude Code or Codex session after installing or updating so the skills are loaded into the new agent context.
 
-## Upgrading from the Gateway skills
-
-The package was renamed: repository `the-square-labs/gateway-skills` is now `opfield/opfield-skills`, the plugin `gateway@gateway-skills` is `opfield@opfield-skills`, and the entry skill `using-gateway` is `using-opfield`. The domain skills keep their names. Remove the old installation, then install the new one:
-
-```bash
-# Skills installed with npx skills
-npx skills remove using-gateway
-npx skills add opfield/opfield-skills --skill '*'
-
-# Claude Code
-claude plugin uninstall gateway@gateway-skills
-claude plugin marketplace remove gateway-skills
-claude plugin marketplace add opfield/opfield-skills
-claude plugin install opfield@opfield-skills
-
-# Codex
-codex plugin remove gateway
-codex plugin marketplace remove gateway-skills
-codex plugin marketplace add opfield/opfield-skills --ref main
-codex plugin add opfield@opfield-skills
-```
-
-An Opfield server keeps serving the old entry skill name over MCP (`gateway://skills/using-gateway/SKILL.md` and the `skill-using-gateway` prompt return `using-opfield`), so agents that still ask for it keep working.
-
 ## Connect the installed skills to Opfield
 
 This package does not bundle a fixed MCP server because every Opfield installation has its own hostname and OAuth boundary.

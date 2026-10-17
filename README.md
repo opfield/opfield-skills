@@ -42,10 +42,6 @@ INSTALL.md, then help me connect my Opfield instance through OAuth MCP.
 
 The package does not connect to infrastructure or run anything automatically. Ask your agent to connect to your Opfield installation or use an existing `opfield` MCP connection.
 
-## Renamed from the Gateway skills
-
-This package was `the-square-labs/gateway-skills`, with the `gateway` plugin and the `using-gateway` entry skill. GitHub redirects the old repository name. Reinstall under the new names (see [INSTALL.md](INSTALL.md#upgrading-from-the-gateway-skills)); an Opfield server still answers `gateway://skills/using-gateway/...` with the `using-opfield` skill.
-
 ## Skills
 
 `using-opfield` is the entry point. It teaches the resource model, MCP connection and discovery, safety rules, asynchronous Tasks, layered verification, and rollback, and routes each request to the domain skill that owns it.
